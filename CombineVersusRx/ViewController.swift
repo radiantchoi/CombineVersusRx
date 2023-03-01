@@ -211,7 +211,7 @@ final class ViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        viewModel.$combineSecondStream
+        viewModel.$combineFirstStream
             .combineLatest(viewModel.$combineSecondStream)
             .sink { [weak self] tuple in
                 self?.combineCombineLatestLabel.text = "\(tuple.0), \(tuple.1)"

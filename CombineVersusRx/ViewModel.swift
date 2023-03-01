@@ -29,34 +29,28 @@ final class ViewModel {
     }
     
     func increaseCombineFirstStream() {
-        
+        combineFirstStream += 1
     }
     
     func increaseCombineSecondStream() {
-        
+        combineSecondStream += 1
     }
     
     func increaseRxFirstStream() {
+        guard let value = try? rxFirstSubject.value() else {
+            debugPrint("Failed to get value")
+            return
+        }
         
+        rxFirstSubject.onNext(value + 1)
     }
     
     func increaseRxSecondStream() {
+        guard let value = try? rxSecondSubject.value() else {
+            debugPrint("Failed to get value")
+            return
+        }
         
-    }
-    
-    func combineZip() {
-        
-    }
-    
-    func combineCombineLatest() {
-        
-    }
-    
-    func rxZip() {
-        
-    }
-    
-    func rxCombineLatest() {
-        
+        rxSecondSubject.onNext(value + 1)
     }
 }
