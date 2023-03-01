@@ -31,9 +31,15 @@ final class ViewController: UIViewController {
         return label
     }()
     
-    private lazy var combineMergedLabel: UILabel = {
+    private lazy var combineZipLabel: UILabel = {
         let label = UILabel()
-        label.text = "Combine merged"
+        label.text = "Combine zip"
+        return label
+    }()
+    
+    private lazy var combineCombineLatestLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Combine combineLatest"
         return label
     }()
     
@@ -49,9 +55,15 @@ final class ViewController: UIViewController {
         return label
     }()
     
-    private lazy var rxMergedLabel: UILabel = {
+    private lazy var rxZipLabel: UILabel = {
         let label = UILabel()
-        label.text = "RxSwift merged"
+        label.text = "Rx zip"
+        return label
+    }()
+    
+    private lazy var rxCombineLatestLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Rx combineLatest"
         return label
     }()
     
@@ -186,6 +198,7 @@ final class ViewController: UIViewController {
         super.viewDidLoad()
         
         setupView()
+        subscribeViewModel()
     }
     
     private func setupView() {
@@ -212,7 +225,8 @@ final class ViewController: UIViewController {
     private func setupCombineStackView() {
         combineLabelStackView.addArrangedSubview(combineFirstLabel)
         combineLabelStackView.addArrangedSubview(combineSecondLabel)
-        combineLabelStackView.addArrangedSubview(combineMergedLabel)
+        combineLabelStackView.addArrangedSubview(combineZipLabel)
+        combineLabelStackView.addArrangedSubview(combineCombineLatestLabel)
         
         combineButtonStackView.addArrangedSubview(combineFirstStreamButton)
         combineButtonStackView.addArrangedSubview(combineSecondStreamButton)
@@ -224,13 +238,66 @@ final class ViewController: UIViewController {
     private func setupRxStackView() {
         rxLabelStackView.addArrangedSubview(rxFirstLabel)
         rxLabelStackView.addArrangedSubview(rxSecondLabel)
-        rxLabelStackView.addArrangedSubview(rxMergedLabel)
+        rxLabelStackView.addArrangedSubview(rxZipLabel)
+        rxLabelStackView.addArrangedSubview(rxCombineLatestLabel)
         
         rxButtonStackView.addArrangedSubview(rxFirstStreamButton)
         rxButtonStackView.addArrangedSubview(rxSecondStreamButton)
         
         rxOperationStackView.addArrangedSubview(rxZipButton)
         rxOperationStackView.addArrangedSubview(rxCombineLatestButton)
+    }
+    
+    private func subscribeViewModel() {
+        viewModel.$combineFirstStream
+            .sink { [weak self] value in
+                self?.combineFirstLabel.text = String(value)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$combineSecondStream
+            .sink { [weak self] value in
+                self?.combineSecondLabel.text = String(value)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$combineFirstStream
+            .zip(viewModel.$combineSecondStream)
+            .sink { [weak self] tuple in
+                self?.combineZipLabel.text = "\(tuple.0), \(tuple.1)"
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$combineSecondStream
+            .combineLatest(viewModel.$combineSecondStream)
+            .sink { [weak self] tuple in
+                self?.combineCombineLatestLabel.text = "\(tuple.0), \(tuple.1)"
+            }
+            .store(in: &cancellables)
+        
+        viewModel.rxFirstStream
+            .subscribe(onNext: { [weak self] value in
+                self?.rxFirstLabel.text = String(value)
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.rxSecondStream
+            .subscribe(onNext: { [weak self] value in
+                self?.rxSecondLabel.text = String(value)
+            })
+            .disposed(by: disposeBag)
+        
+        Observable.zip(viewModel.rxFirstStream, viewModel.rxSecondStream)
+            .subscribe(onNext: { [weak self] tuple in
+                self?.rxZipLabel.text = "\(tuple.0), \(tuple.1)"
+            })
+            .disposed(by: disposeBag)
+        
+        Observable.combineLatest(viewModel.rxFirstStream, viewModel.rxSecondStream)
+            .subscribe(onNext: { [weak self] tuple in
+                self?.rxCombineLatestLabel.text = "\(tuple.0), \(tuple.1)"
+            })
+            .disposed(by: disposeBag)
     }
 }
 
