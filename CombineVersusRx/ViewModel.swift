@@ -13,6 +13,12 @@ final class ViewModel {
     @Published var combineFirstStream: Int
     @Published var combineSecondStream: Int
     
+    // 프로퍼티 래퍼가 써 보고 싶어서 사용했지만~
+    // Observable<Int> 표현은 AnyCancellable<Int, Error> 와 같다고 볼 수 있습니다.
+    // PublishSubject<Int>() 표현은 PassThroughSubject<Int, Error>()와 같다고 볼 수 있습니다.
+    // onNext 메서드는 send 메서드와 같습니다.
+    // 직접 이를 적용해 수정해보는 것도 좋습니다.
+    
     private var rxFirstSubject = BehaviorSubject(value: 1)
     private var rxSecondSubject = BehaviorSubject(value: 1)
     
