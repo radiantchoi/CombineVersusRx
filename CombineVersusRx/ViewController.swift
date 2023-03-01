@@ -17,6 +17,7 @@ final class ViewController: UIViewController {
     
     private let viewModel = ViewModel()
     private let disposeBag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
     
     private lazy var combineFirstLabel: UILabel = {
         let label = UILabel()

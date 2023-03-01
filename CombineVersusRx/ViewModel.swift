@@ -13,15 +13,19 @@ final class ViewModel {
     @Published var combineFirstStream: Int
     @Published var combineSecondStream: Int
     
-    var rxFirstStream: Observable<Int>
-    var rxSecondStream: Observable<Int>
+    private var rxFirstSubject = BehaviorSubject(value: 1)
+    private var rxSecondSubject = BehaviorSubject(value: 1)
+    
+    var rxFirstStream: Observable<Int> {
+        return rxFirstSubject.asObservable()
+    }
+    var rxSecondStream: Observable<Int> {
+        return rxSecondSubject.asObservable()
+    }
 
     init() {
         combineFirstStream = 1
         combineSecondStream = 1
-        
-        rxFirstStream = Observable.just(1)
-        rxSecondStream = Observable.just(1)
     }
     
     func increaseCombineFirstStream() {
