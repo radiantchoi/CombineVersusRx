@@ -98,39 +98,7 @@ final class ViewController: UIViewController {
         button.setTitleColor(.white, for: .normal)
         return button
     }()
-    
-    private lazy var combineZipButton: UIButton = {
-        let button = UIButton(type: .roundedRect)
-        button.backgroundColor = .systemGreen
-        button.setTitle("combineZip", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        return button
-    }()
-    
-    private lazy var combineLatestButton: UIButton = {
-        let button = UIButton(type: .roundedRect)
-        button.backgroundColor = .systemCyan
-        button.setTitle("combineCombineLatest", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        return button
-    }()
-    
-    private lazy var rxZipButton: UIButton = {
-        let button = UIButton(type: .roundedRect)
-        button.backgroundColor = .systemGreen
-        button.setTitle("rxZip", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        return button
-    }()
-    
-    private lazy var rxCombineLatestButton: UIButton = {
-        let button = UIButton(type: .roundedRect)
-        button.backgroundColor = .systemCyan
-        button.setTitle("rxCombineLatest", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        return button
-    }()
-    
+
     private lazy var combineLabelStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.alignment = .center
@@ -143,24 +111,6 @@ final class ViewController: UIViewController {
     private lazy var combineButtonStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.alignment = .center
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 8
-        return stackView
-    }()
-    
-    private lazy var combineOperationStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.alignment = .fill
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 8
-        return stackView
-    }()
-    
-    private lazy var rxOperationStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.alignment = .fill
         stackView.axis = .horizontal
         stackView.distribution = .equalSpacing
         stackView.spacing = 8
@@ -199,6 +149,7 @@ final class ViewController: UIViewController {
         
         setupView()
         subscribeViewModel()
+        connectActions()
     }
     
     private func setupView() {
@@ -213,10 +164,8 @@ final class ViewController: UIViewController {
     private func setupContentsStackView() {
         contentsStackView.addArrangedSubview(combineLabelStackView)
         contentsStackView.addArrangedSubview(combineButtonStackView)
-        contentsStackView.addArrangedSubview(combineOperationStackView)
         contentsStackView.addArrangedSubview(rxLabelStackView)
         contentsStackView.addArrangedSubview(rxButtonStackView)
-        contentsStackView.addArrangedSubview(rxOperationStackView)
         
         setupCombineStackView()
         setupRxStackView()
@@ -230,9 +179,6 @@ final class ViewController: UIViewController {
         
         combineButtonStackView.addArrangedSubview(combineFirstStreamButton)
         combineButtonStackView.addArrangedSubview(combineSecondStreamButton)
-        
-        combineOperationStackView.addArrangedSubview(combineZipButton)
-        combineOperationStackView.addArrangedSubview(combineLatestButton)
     }
     
     private func setupRxStackView() {
@@ -243,9 +189,6 @@ final class ViewController: UIViewController {
         
         rxButtonStackView.addArrangedSubview(rxFirstStreamButton)
         rxButtonStackView.addArrangedSubview(rxSecondStreamButton)
-        
-        rxOperationStackView.addArrangedSubview(rxZipButton)
-        rxOperationStackView.addArrangedSubview(rxCombineLatestButton)
     }
     
     private func subscribeViewModel() {
@@ -296,6 +239,37 @@ final class ViewController: UIViewController {
         Observable.combineLatest(viewModel.rxFirstStream, viewModel.rxSecondStream)
             .subscribe(onNext: { [weak self] tuple in
                 self?.rxCombineLatestLabel.text = "\(tuple.0), \(tuple.1)"
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func connectActions() {
+        // 편의상 액션에서는 RxCocoa를 사용했습니다.
+        combineFirstStreamButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { _ in
+                self.viewModel.increaseCombineFirstStream()
+            })
+            .disposed(by: disposeBag)
+        
+        combineSecondStreamButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { _ in
+                self.viewModel.increaseCombineSecondStream()
+            })
+            .disposed(by: disposeBag)
+        
+        rxFirstStreamButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { _ in
+                self.viewModel.increaseRxFirstStream()
+            })
+            .disposed(by: disposeBag)
+        
+        rxSecondStreamButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { _ in
+                self.viewModel.increaseRxSecondStream()
             })
             .disposed(by: disposeBag)
     }
