@@ -15,6 +15,7 @@ import SnapKit
 final class ViewController: UIViewController {
     // 수행해볼 것: 발신과 수신, map, zip, combineLatest
     
+    private let viewModel = ViewModel()
     private let disposeBag = DisposeBag()
     
     private lazy var combineFirstLabel: UILabel = {
@@ -29,6 +30,12 @@ final class ViewController: UIViewController {
         return label
     }()
     
+    private lazy var combineMergedLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Combine merged"
+        return label
+    }()
+    
     private lazy var rxFirstLabel: UILabel = {
         let label = UILabel()
         label.text = "RxSwift 1"
@@ -38,6 +45,12 @@ final class ViewController: UIViewController {
     private lazy var rxSecondLabel: UILabel = {
         let label = UILabel()
         label.text = "RxSwift 2"
+        return label
+    }()
+    
+    private lazy var rxMergedLabel: UILabel = {
+        let label = UILabel()
+        label.text = "RxSwift merged"
         return label
     }()
     
@@ -198,6 +211,7 @@ final class ViewController: UIViewController {
     private func setupCombineStackView() {
         combineLabelStackView.addArrangedSubview(combineFirstLabel)
         combineLabelStackView.addArrangedSubview(combineSecondLabel)
+        combineLabelStackView.addArrangedSubview(combineMergedLabel)
         
         combineButtonStackView.addArrangedSubview(combineFirstStreamButton)
         combineButtonStackView.addArrangedSubview(combineSecondStreamButton)
@@ -209,6 +223,7 @@ final class ViewController: UIViewController {
     private func setupRxStackView() {
         rxLabelStackView.addArrangedSubview(rxFirstLabel)
         rxLabelStackView.addArrangedSubview(rxSecondLabel)
+        rxLabelStackView.addArrangedSubview(rxMergedLabel)
         
         rxButtonStackView.addArrangedSubview(rxFirstStreamButton)
         rxButtonStackView.addArrangedSubview(rxSecondStreamButton)
