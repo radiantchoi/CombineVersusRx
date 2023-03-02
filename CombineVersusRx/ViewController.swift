@@ -273,5 +273,11 @@ final class ViewController: UIViewController {
             })
             .disposed(by: disposeBag)
     }
+    
+    deinit {
+        cancellables.forEach {
+            $0.cancel()
+        }
+    }
 }
 
